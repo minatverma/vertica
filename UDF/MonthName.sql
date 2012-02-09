@@ -39,6 +39,5 @@ RETURN VARCHAR(10)
       WHEN (month = 10) THEN 'October'
       WHEN (month = 11) THEN 'November'
       WHEN (month = 12) THEN 'December'
-      ELSE 'ERROR'
     END);
   END;
