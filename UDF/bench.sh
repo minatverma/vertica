@@ -17,6 +17,10 @@ $VSQL -c "create table if not exists UDFSimpleBencmark ( m_num int )"
 # load data
 $VSQL -c "copy UDFSimpleBencmark from '/tmp/int_1mil.dat' direct"
 
+#
+$VSQL -c "create library MonthNameLib AS '/home/dbadmin/MonthNameLib.so'"
+$VSQL -c "create function month_name_cpp as language 'C++' name 'MonthNameFactory' library MonthNameLib;"
+
 # measurement
 echo -e "SQL month name DECODE bench:\n"
 echo -e "\\\timing\n\\o /dev/null\nselect month_name_decode(m_num) from UDFSimpleBencmark;" | \
@@ -37,6 +41,6 @@ echo -e "\\\timing\n\\o /dev/null\nselect month_name_cpp(m_num) from UDFSimpleBe
 echo -e "\n---\n"
 
 $VSQL -c "drop table if exists UDFSimpleBencmark"
-#rm -f /tmp/int_1mil.dat
+rm -f /tmp/int_1mil.dat
 
 
