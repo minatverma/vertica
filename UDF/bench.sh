@@ -8,7 +8,7 @@ g++ -D HAVE_LONG_INT_64 -I /opt/vertica/sdk/include -Wall -shared -Wno-unused-va
 	-fPIC -o MonthNameLib.so MonthName.cpp /opt/vertica/sdk/include/Vertica.cpp
 
 # create random data
-echo -e "import random\n\nfor i in xrange(1000000):\n\tprint i\n\n" | \
+echo -e "import random\n\nfor i in xrange(1000000):\n\tprint random.randint(1,12)\n\n" | \
 	python > /tmp/int_1mil.dat
 
 # create table
