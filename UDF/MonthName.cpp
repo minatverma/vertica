@@ -3,6 +3,11 @@
  * when 'January' is a first in order.
  *
  * Create Date: May 29, 2012
+ * Author     : daniel@twingo.co.il
+ * Comiling   :
+ * g++ -D HAVE_LONG_INT_64 -I /opt/vertica/sdk/include \
+ * -Wall -shared -Wno-unused-value -fPIC               \
+ * -o MonthNameUDF.so MonthName.cpp /opt/vertica/sdk/include/Vertica.cpp
  */
 #include "Vertica.h"
 #include <string>
