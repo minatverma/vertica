@@ -155,3 +155,87 @@ CREATE TABLE public.CITIES
     OBJ_VERSION int DEFAULT (0)
 );
 
+
+---
+---
+---
+CREATE TABLE public.COMPANY
+(
+    COMPANY_ID int NOT NULL,
+    "NAME" varchar(255),
+    CREATION_DATE date,
+    COMPANY_TYPE int,
+    COMPANY_SIZE varchar(255),
+    ADDRESS1 varchar(255),
+    ADDRESS2 varchar(255),
+    CITY varchar(255),
+    STATE varchar(255),
+    COUNTRY varchar(255),
+    ZIP varchar(20),
+    PHONE varchar(30),
+    EXTERNAL_ID varchar(255)
+);
+
+
+
+---
+---
+---
+CREATE TABLE public.COUNTRIES
+(
+    COUNTRY_ID int NOT NULL,
+    COUNTRY_NAME varchar(100),
+    OBJ_VERSION int DEFAULT (0),
+    COUNTRY_DIALING_CODE varchar(10)
+);
+
+
+---
+--- 
+---
+CREATE TABLE public.COUPON_USAGE
+(
+    COUPON_USAGE_ID int NOT NULL,
+    USAGE_DATE date,
+    GRANTED_SYS_COUPON_ID int NOT NULL,
+    SUPPORT_PACKAGE_ID int,
+    SUPPORT_SESSION_ID int
+);
+
+
+
+---
+---
+---
+CREATE TABLE public.CPN_COUPON
+(
+    COUPON_ID int NOT NULL,
+    COUPON_TYPE varchar(31) NOT NULL,
+    AMOUNT float,
+    PERCENTAGE_AMOUNT float,
+    SESSION_PRICE money
+);
+
+
+
+---
+---
+---
+CREATE TABLE public.CPN_GRANTED_SYS_COUPON
+(
+    GRANTED_SYS_COUPON_ID int NOT NULL,
+    DATE_GRANTED date,
+    SUPPORT_SESSION_ID int,
+    CUSTOMER_ID int,
+    SYSTEM_COUPON_ID int NOT NULL,
+    SUPPORT_PACKAGE_ID int,
+    PAYMENT_TOKEN_ID int,
+    CPN_GRANTED_TYPE varchar(31) NOT NULL,
+    "ENABLED" BOOLEAN DEFAULT (1),
+    GRANTING_TYPE varchar(255),
+    IN_STORE_PAYMENT_CARD_ID int,
+    COMPANY_ID int,
+    NUM_OF_USERS int DEFAULT (0)
+);
+
+
