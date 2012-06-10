@@ -144,3 +144,14 @@ CREATE TABLE public."TRANSACTION"
     PAYMENT_CHANNEL varchar(40)
 );
 
+
+---
+---
+---
+CREATE TABLE public.CITIES
+(
+    CITY_ID INT NOT NULL,
+    CITY_NAME varchar(100),
+    OBJ_VERSION int DEFAULT (0)
+);
+
