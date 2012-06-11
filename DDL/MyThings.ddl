@@ -102,8 +102,7 @@ FROM (  SELECT R.Atok, R.GoogId, MAX(Date_Time) MaxDate
         JOIN RetargetingUsers R
         ON L.GoogId = R.GoogId
         AND L.Atok = R.Atok
-        GROUP BY R.Atok, R.GoogId 
-        CLUSTER BY Atok, GoogId
+        GROUP BY R.Atok, R.GoogId
     )DD
 JOIN unified_logs UL
 ON  DD.GoogId = UL.GoogId 
