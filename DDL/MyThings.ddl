@@ -1,5 +1,5 @@
 DROP TABLE IF EXISTS unified_logs;
-CREATE EXTERNAL TABLE IF NOT EXISTS unified_logs (
+CREATE TABLE IF NOT EXISTS unified_logs (
                                      Version varchar
                                     ,EventType int
                                     ,SubEventType int
