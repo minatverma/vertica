@@ -155,31 +155,25 @@ GROUP BY Atok, Segment ;
 ------------------------------------------------------------
 -- Get histograms of users
 DROP TABLE IF EXISTS usersForHistograms;
-CREATE TABLE IF NOT EXISTS usersForHistograms
-                           (GoogId varchar
-                           , CountImpBeforeConv INT
-                           , CountClickBeforeConv INT
-                           , CountVisitBeforeConv INT);
-
-INSERT INTO usersForHistograms
-SELECT  C.GoogId
+CREATE TABLE IF NOT EXISTS usersForHistograms AS
+SELECT C.GoogId
         , SUM(CASE WHEN EventType=1 THEN 1 ELSE 0 END) CountImpBeforeConv
         , SUM(CASE WHEN EventType=2 THEN 1 ELSE 0 END) CountClickBeforeConv
         , SUM(CASE WHEN EventType=3 THEN 1 ELSE 0 END) CountVisitBeforeConv
         , UL.Atok
 FROM
-(   SELECT R.Atok, R.GoogId, Date_Time ConvDate
+( SELECT R.Atok, R.GoogId, Date_Time ConvDate
     FROM RetargetingUsers R
     JOIN unified_logs UL
-    ON  R.GoogId = UL.GoogId
+    ON R.GoogId = UL.GoogId
         AND R.Atok = UL.Atok
     WHERE UL.EventType = 4
 )C
 JOIN unified_logs UL
-ON  C.GoogId = UL.GoogId
+ON C.GoogId = UL.GoogId
     AND C.Atok = UL.Atok
 WHERE C.ConvDate > UL.Date_Time
-GROUP BY UL.Atok, C.GoogId ; 
+GROUP BY UL.Atok, C.GoogId ;
 
 
 
