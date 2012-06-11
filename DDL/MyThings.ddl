@@ -79,17 +79,8 @@ WHERE VIS.EventType = 3
 ------------------------------------------------------------
 -- Get Distinct Users Per Segment
 DROP TABLE IF EXISTS UsersDetails;
-CREATE TABLE IF NOT EXISTS UsersDetails
-                           (GoogId varchar
-                           , Date_Time varchar
-                           , Segment varchar
-                           , CountImp INT
-                           , CountClick INT
-                           , CountVisit INT
-                           , CountConv INT);
-
-INSERT INTO UsersDetails
-SELECT  DD.GoogId
+CREATE TABLE  UsersDetails AS
+SELECT DD.GoogId
         , MaxDate
         , UL.Segment
         , SUM(CASE WHEN EventType=1 THEN 1 ELSE 0 END) CountImp
@@ -97,7 +88,7 @@ SELECT  DD.GoogId
         , SUM(CASE WHEN EventType=3 THEN 1 ELSE 0 END) CountVisit
         , SUM(CASE WHEN EventType=4 THEN 1 ELSE 0 END) CountConv
         , DD.Atok
-FROM (  SELECT R.Atok, R.GoogId, MAX(Date_Time) MaxDate
+FROM ( SELECT R.Atok, R.GoogId, MAX(Date_Time) MaxDate
         FROM unified_logs L
         JOIN RetargetingUsers R
         ON L.GoogId = R.GoogId
@@ -105,10 +96,10 @@ FROM (  SELECT R.Atok, R.GoogId, MAX(Date_Time) MaxDate
         GROUP BY R.Atok, R.GoogId
     )DD
 JOIN unified_logs UL
-ON  DD.GoogId = UL.GoogId 
+ON DD.GoogId = UL.GoogId
     AND DD.Atok = UL.Atok
-    AND DD.MaxDate = UL.Date_Time        
-GROUP BY DD.Atok, DD.GoogId, MaxDate, UL.Segment ; 
+    AND DD.MaxDate = UL.Date_Time
+GROUP BY DD.Atok, DD.GoogId, MaxDate, UL.Segment ;
 
 
 ---
