@@ -1,0 +1,259 @@
+                                                                     
+                                                                     
+                                                                     
+                                             
+set hive.optimize.s3.query=true;
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition=true;
+
+
+DROP TABLE unified_logs;
+CREATE EXTERNAL TABLE IF NOT EXISTS unified_logs
+                                    (Version STRING
+                                    ,EventType int
+                                    ,SubEventType int
+                                    ,Date_Time STRING
+                                    ,CookieId STRING
+                                    ,SessionId STRING
+                                    ,EventLinkId STRING
+                                    ,IP STRING
+                                    ,GeoCountry STRING
+                                    ,OS STRING
+                                    ,Browser STRING
+                                    ,FingerPrint STRING
+                                    ,GoogId STRING
+                                    ,NTOKUserId STRING
+                                    ,RandomSlot STRING
+                                    ,Atok STRING
+                                    ,Cmpid STRING
+                                    ,BannerId STRING
+                                    ,Variation STRING
+                                    ,AdSize STRING
+                                    ,AtokCountry STRING
+                                    ,RawActionId STRING
+                                    ,ConvActionId STRING
+                                    ,Segment STRING
+                                    ,RTBBidPrice STRING
+                                    ,RTBWinPrice STRING
+                                    ,RTBCurrency STRING
+                                    ,ProductId STRING
+                                    ,ProductName STRING
+                                    ,ProductDesc STRING
+                                    ,ClickedOrigin STRING
+                                    ,ClickedSeqNo STRING
+                                    ,Category STRING
+                                    ,InStock STRING
+                                    ,OldPrice STRING
+                                    ,CurrentPrice STRING
+                                    ,TransactionAmt STRING
+                                    ,PriceCurrency STRING
+                                    ,TransactionRef STRING
+                                    ,ReferrerURL STRING
+                                    ,URL STRING
+                                    ,PlacementId STRING
+                                    ,Fold STRING
+                                    ,ImageUrl STRING
+                                    ,UserData STRING
+                                    ,MoreInfo STRING
+                                    ,STID STRING
+                                    ,STDateTime STRING
+                                    ,SearchTerm STRING
+                                    ,SearchCmpid STRING
+                                    ,SearchScore STRING
+                                    ,CRF STRING
+                                    ,Categories STRING
+                                    ,Recency STRING
+                                    ,RecoProducts STRING
+                                    ,ABTestGlobal STRING
+                                    ,ABTestAtok STRING
+                                    ,Channel STRING)
+PARTITIONED BY (a STRING COMMENT 'Advertiser', d STRING COMMENT 'Date') 
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION 's3://mt-mapreduce/maya/VerticaPOC/'
+;
+--LOCATION 's3://mt-data-prod/UEL-flat/'
+
+ALTER TABLE unified_logs ADD PARTITION (a='awin-3090-100-uk',d = '2012-05-29') location 's3://mt-mapreduce/maya/VerticaPOC/TEST/Data';
+...
+
+CREATE INDEX UEL_indx 
+ON TABLE unified_logs(Atok, GoogId) 
+AS 'COMPACT' 
+WITH DEFERRED REBUILD 
+IN TABLE UEL_indx_tbl;
+------------------------------------------------------------
+--Get Retargeting Users
+DROP TABLE RetargetingUsers;
+CREATE EXTERNAL TABLE IF NOT EXISTS RetargetingUsers
+(GoogId STRING)
+PARTITIONED BY (Atok STRING comment 'Advertiser')
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' STORED AS TEXTFILE
+LOCATION 's3://mt-mapreduce/maya/VerticaPOC/TEST/RetargetingUsers';
+
+INSERT OVERWRITE TABLE RetargetingUsers PARTITION (Atok)
+SELECT DISTINCT Imp.GoogId, VIS.Atok
+FROM unified_logs VIS
+JOIN unified_logs IMP
+ON  VIS.GoogId = IMP.GoogId
+    AND VIS.Atok = IMP.Atok
+WHERE VIS.EventType = 3
+    AND IMP.EventType = 1
+    AND VIS.Date_Time < IMP.Date_Time
+;
+
+CREATE INDEX RetargetingUsers_indx 
+ON TABLE RetargetingUsers(GoogId) 
+AS 'COMPACT' 
+WITH DEFERRED REBUILD 
+IN TABLE RetargetingUsers_indx_tbl;
+------------------------------------------------------------
+-- Get Distinct Users Per Segment
+DROP TABLE UsersDetails;
+CREATE EXTERNAL TABLE IF NOT EXISTS UsersDetails
+                                    (GoogId STRING
+                                    , Date_Time STRING
+                                    , Segment STRING
+                                    , CountImp INT
+                                    , CountClick INT
+                                    , CountVisit INT
+                                    , CountConv INT)
+PARTITIONED BY (Atok STRING comment 'Advertiser')
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' STORED AS TEXTFILE
+LOCATION 's3://mt-mapreduce/maya/VerticaPOC/TEST/UsersDetails';
+
+INSERT OVERWRITE TABLE UsersDetails PARTITION (Atok)
+SELECT  DD.GoogId
+        , MaxDate
+        , UL.Segment
+        , SUM(CASE WHEN EventType=1 THEN 1 ELSE 0 END) CountImp
+        , SUM(CASE WHEN EventType=2 THEN 1 ELSE 0 END) CountClick
+        , SUM(CASE WHEN EventType=3 THEN 1 ELSE 0 END) CountVisit
+        , SUM(CASE WHEN EventType=4 THEN 1 ELSE 0 END) CountConv
+        , DD.Atok
+FROM (  SELECT R.Atok, R.GoogId, MAX(Date_Time) MaxDate
+        FROM unified_logs L
+        JOIN RetargetingUsers R
+        ON L.GoogId = R.GoogId
+        AND L.Atok = R.Atok
+        GROUP BY R.Atok, R.GoogId 
+        CLUSTER BY Atok, GoogId
+    )DD
+JOIN unified_logs UL
+ON  DD.GoogId = UL.GoogId 
+    AND DD.Atok = UL.Atok
+    AND DD.MaxDate = UL.Date_Time        
+GROUP BY DD.Atok, DD.GoogId, MaxDate, UL.Segment
+CLUSTER BY Atok, GoogId
+;
+
+CREATE INDEX UsersDetails_indx 
+ON TABLE UsersDetails(Segment) 
+AS 'COMPACT' 
+WITH DEFERRED REBUILD 
+IN TABLE UsersDetails_indx_tbl;
+---
+-- Get actions per segment, based on the user's segment at the last event
+SELECT  S.Atok
+        , S.Segment
+        , COUNT(S.GoogId) DistinctUsers
+        , SUM(CountImp) AllImp
+        , SUM(CASE WHEN CountImp>0 THEN 1 ELSE 0 END)   DistImp
+        , SUM(CountClick) AllClick
+        , SUM(CASE WHEN CountClick>0 THEN 1 ELSE 0 END) DistClick
+        , SUM(CountVisit) AllVisit
+        , SUM(CASE WHEN CountVisit>0 THEN 1 ELSE 0 END) DistVisit
+        , SUM(CountConv) AllConv
+        , SUM(CASE WHEN CountConv>0 THEN 1 ELSE 0 END)  DistConv
+FROM UsersDetails S
+JOIN unified_logs UL
+ON  S.GoogId = UL.GoogId
+    AND S.Atok = UL.Atok
+GROUP BY S.Atok, S.Segment
+CLUSTER BY Atok, Segment
+;
+
+-----------------------------
+-- Get counters Per Segment, based on the segment at the current event
+SELECT Atok 
+    , Segment
+    , COUNT(GoogId) DistinctUsers
+    , SUM(CountImp) AllImp
+    , SUM(CASE WHEN CountImp>0 THEN 1 ELSE 0 END)   DistImp
+    , SUM(CountClick) AllClick
+    , SUM(CASE WHEN CountClick>0 THEN 1 ELSE 0 END) DistClick
+    , SUM(CountVisit) AllVisit
+    , SUM(CASE WHEN CountVisit>0 THEN 1 ELSE 0 END) DistVisit
+    , SUM(CountConv) AllConv
+    , SUM(CASE WHEN CountConv>0 THEN 1 ELSE 0 END)  DistConv       
+FROM 
+    (SELECT L.Atok
+            , L.GoogId
+            , L.Segment
+            , SUM(CASE WHEN EventType=1 THEN 1 ELSE 0 END) CountImp
+            , SUM(CASE WHEN EventType=2 THEN 1 ELSE 0 END) CountClick
+            , SUM(CASE WHEN EventType=3 THEN 1 ELSE 0 END) CountVisit
+            , SUM(CASE WHEN EventType=4 THEN 1 ELSE 0 END) CountConv
+    FROM unified_logs L
+    JOIN RetargetingUsers R
+    ON  L.GoogId = R.GoogId
+        AND L.Atok = R.Atok
+    GROUP BY L.Atok, L.GoogId, L.Segment
+    CLUSTER BY Atok, GoogId, Segment
+    )A
+GROUP BY Atok, Segment
+CLUSTER BY Atok, Segment
+;
+------------------------------------------------------------
+-- Get histograms of users
+DROP TABLE usersForHistograms;
+CREATE EXTERNAL TABLE IF NOT EXISTS usersForHistograms
+                                    (GoogId STRING
+                                    , CountImpBeforeConv INT
+                                    , CountClickBeforeConv INT
+                                    , CountVisitBeforeConv INT)
+PARTITIONED BY (Atok STRING comment 'Advertiser')
+ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t' LINES TERMINATED BY '\n' STORED AS TEXTFILE
+LOCATION 's3://mt-mapreduce/maya/VerticaPOC/TEST/usersForHistograms';
+
+INSERT OVERWRITE TABLE usersForHistograms PARTITION (Atok)
+SELECT  C.GoogId
+        , SUM(CASE WHEN EventType=1 THEN 1 ELSE 0 END) CountImpBeforeConv
+        , SUM(CASE WHEN EventType=2 THEN 1 ELSE 0 END) CountClickBeforeConv
+        , SUM(CASE WHEN EventType=3 THEN 1 ELSE 0 END) CountVisitBeforeConv
+        , UL.Atok
+FROM
+(   SELECT R.Atok, R.GoogId, Date_Time ConvDate
+    FROM RetargetingUsers R
+    JOIN unified_logs UL
+    ON  R.GoogId = UL.GoogId
+        AND R.Atok = UL.Atok
+    WHERE UL.EventType = 4
+)C
+JOIN unified_logs UL
+ON  C.GoogId = UL.GoogId
+    AND C.Atok = UL.Atok
+WHERE C.ConvDate > UL.Date_Time
+GROUP BY UL.Atok, C.GoogId 
+CLUSTER BY Atok, GoogId
+;
+
+SELECT Atok, CountImpBeforeConv, COUNT(*) CntUsers
+FROM usersForHistograms
+GROUP BY Atok, CountImpBeforeConv
+CLUSTER BY Atok, CountImpBeforeConv
+;
+
+SELECT Atok, CountClickBeforeConv, COUNT(*) CntUsers
+FROM usersForHistograms
+GROUP BY Atok, CountClickBeforeConv
+CLUSTER BY Atok, CountClickBeforeConv
+;
+
+SELECT Atok, CountVisitBeforeConv, COUNT(*) CntUsers
+FROM usersForHistograms
+GROUP BY Atok, CountVisitBeforeConv
+CLUSTER BY Atok, CountVisitBeforeConv
+;
+
+
