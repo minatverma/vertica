@@ -2,13 +2,19 @@
 -- Returns if argument is from type INT. 
 -- @a      - int candidate
 -- @return - true iff argument is INT
+-- The range of INTEGER is -2^63+1 to 2^63-1.
 ------
 CREATE OR REPLACE FUNCTION is_int(a varchar(65000))
 RETURN BOOLEAN
   AS BEGIN
-    RETURN REGEXP_LIKE(a,'^\d{1,19}$') OR (
-           REGEXP_LIKE(a,'^[1-9](\d+)?\.\d+e[-+]\d+') AND  
-           ABS(a::numeric) <= 9223372036854775807);
+    RETURN (
+        REGEXP_LIKE(a,'^\d{1,19}$') 
+          OR 
+        REGEXP_LIKE(a,'^[1-9](\d+)?\.\d+e[-+]\d+')        -- validate sientific notation
+          OR
+        REGEXP_LIKE(a,'','')                              -- TODO: validate hex notation
+    ) AND
+        ABS(a::numeric) <= 9223372036854775807);          -- check range
   END;
 
 
