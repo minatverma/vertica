@@ -17,7 +17,6 @@ RETURN BOOLEAN
 -- @month  - moth number candidate
 -- @return - month name iff month number is valid otherwise null
 ------
-
 CREATE OR REPLACE FUNCTION month_name(month INT)
 RETURN VARCHAR(10)
   AS BEGIN
@@ -37,3 +36,26 @@ RETURN VARCHAR(10)
     END);
   END;
 
+------ 
+-- Extracts month name from date.
+-- @d      - date candidate
+-- @return - month name iff month number is valid otherwise null
+------
+CREATE OR REPLACE FUNCTION month_name(d DATE)
+RETURN VARCHAR(10)
+  AS BEGIN
+    RETURN (CASE
+      WHEN (month(d) =  1) THEN 'January'
+      WHEN (month(d) =  2) THEN 'February'
+      WHEN (month(d) =  3) THEN 'March'
+      WHEN (month(d) =  4) THEN 'April'
+      WHEN (month(d) =  5) THEN 'May'
+      WHEN (month(d) =  6) THEN 'June'
+      WHEN (month(d) =  7) THEN 'July'
+      WHEN (month(d) =  8) THEN 'August'
+      WHEN (month(d) =  9) THEN 'September'
+      WHEN (month(d) = 10) THEN 'October'
+      WHEN (month(d) = 11) THEN 'November'
+      WHEN (month(d) = 12) THEN 'December'
+    END);
+  END;
