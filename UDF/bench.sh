@@ -1,23 +1,38 @@
 #!/bin/bash
 
-
 VSQL=/opt/vertica/bin/vsql
+CPP='_cpp'
+CASE='_case'
+DECODE='_decode'
 
-# compile MonthName.cpp
+##
+## compile MonthName.cpp
+##
 g++ -D HAVE_LONG_INT_64 -I /opt/vertica/sdk/include -Wall -shared -Wno-unused-value \
 	-fPIC -o MonthNameLib.so MonthName.cpp /opt/vertica/sdk/include/Vertica.cpp
 
-# create random data
-echo -e "import random\n\nfor i in xrange(1000000):\n\tprint random.randint(1,12)\n\n" | \
-	python > /tmp/int_1mil.dat
+##
+## create random data
+##
+echo -e "
+import random
+for i in xrange(1000000):
+    print random.randint(1,12)
+" | python > /tmp/int_1mil.dat
 
-# create table
+##
+## create table
+##
 $VSQL -c "create table if not exists UDFSimpleBencmark ( m_num int )"
 
-# load data
+##
+## load data
+##
 $VSQL -c "copy UDFSimpleBencmark from '/tmp/int_1mil.dat' direct"
 
-#
+##
+## create C++ shared library
+##
 $VSQL -c "create library MonthNameLib AS '/home/dbadmin/MonthNameLib.so'"
 $VSQL -c "create function month_name_cpp as language 'C++' name 'MonthNameFactory' library MonthNameLib;"
 
