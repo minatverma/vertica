@@ -1,10 +1,9 @@
-
 ------ 
 -- Returns if argument is from type INT. 
 -- @a      - int candidate
 -- @return - true iff argument is INT
 ------
-CREATE OR REPLACE FUNCTION isInt(a varchar(65000))
+CREATE OR REPLACE FUNCTION is_int(a varchar(65000))
 RETURN BOOLEAN
   AS BEGIN
     RETURN REGEXP_LIKE(a,'^\d{1,19}$') OR (
