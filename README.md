@@ -1,4 +1,9 @@
-vertica
-=======
+Vertica misc
+------------
 
-vertica files
+UDF SQL functions:
+~~~~~~~~~~~~~~~~~~
+
+  * is_int
+  * month_name 
+  * weekday_name
