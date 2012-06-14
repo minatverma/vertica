@@ -15,7 +15,7 @@ RETURN BOOLEAN
 
 
 ------ 
--- Extracts month name from month NUMBER 
+-- Converts month order number to full name
 -- @month  - moth number candidate
 -- @return - month name iff month number is valid otherwise null
 ------
@@ -59,4 +59,48 @@ CREATE OR REPLACE FUNCTION month_name(ts TIMESTAMP)
 RETURN VARCHAR(10)
   AS BEGIN
     RETURN month_name(MONTH(ts));
+  END;
+
+
+------ 
+-- Converts weekday order number to full name
+-- @weekday  - weekday number candidate
+-- @return   - weekday name iff weekday number is valid otherwise null
+------
+CREATE OR REPLACE FUNCTION weekday_name(weekday INT)
+RETURN VARCHAR(10)
+  AS BEGIN
+    RETURN (CASE
+      WHEN (weekday = 1) THEN 'Sunday'
+      WHEN (weekday = 2) THEN 'Monday'
+      WHEN (weekday = 3) THEN 'Tuesday'
+      WHEN (weekday = 4) THEN 'Wednesday' 
+      WHEN (weekday = 5) THEN 'Thursday'
+      WHEN (weekday = 6) THEN 'Friday'
+      WHEN (weekday = 7) THEN 'Saturday' 
+    END);
+  END;
+
+
+------ 
+-- Extracts week day from DATE.
+-- @dt     - date candidate
+-- @return - week day iff week day number is valid otherwise null
+------
+CREATE OR REPLACE FUNCTION weekday_name(dt DATE)
+RETURN VARCHAR(10)
+  AS BEGIN
+    RETURN weekday_name(DAYOFWEEK(dt));
+  END;
+
+
+------ 
+-- Extracts week day from TIMESTAMP.
+-- @ts     - timestamp candidate
+-- @return - week day iff week day number is valid otherwise null
+------
+CREATE OR REPLACE FUNCTION weekday_name(ts TIMESTAMP)
+RETURN VARCHAR(10)
+  AS BEGIN
+    RETURN weekday_name(DAYOFWEEK(ts));
   END;
