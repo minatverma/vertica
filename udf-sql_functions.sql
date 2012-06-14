@@ -40,7 +40,7 @@ RETURN VARCHAR(10)
 
 ------ 
 -- Extracts month name from DATE.
--- @d      - date candidate
+-- @dt     - date candidate
 -- @return - month name iff month number is valid otherwise null
 ------
 CREATE OR REPLACE FUNCTION month_name(dt DATE)
@@ -52,7 +52,7 @@ RETURN VARCHAR(10)
 
 ------ 
 -- Extracts month name from TIMESTAMP.
--- @d      - date candidate
+-- @ts     - timestamp candidate
 -- @return - month name iff month number is valid otherwise null
 ------
 CREATE OR REPLACE FUNCTION month_name(ts TIMESTAMP)
