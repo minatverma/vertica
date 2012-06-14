@@ -7,14 +7,10 @@
 CREATE OR REPLACE FUNCTION is_int(a varchar(65000))
 RETURN BOOLEAN
   AS BEGIN
-    RETURN (
+    RETURN 
         REGEXP_LIKE(a,'^\d{1,19}$') 
-          OR 
-        REGEXP_LIKE(a,'^[1-9](\d+)?\.\d+e[-+]\d+')        -- validate sientific notation
-          OR
-        REGEXP_LIKE(a,'','')                              -- TODO: validate hex notation
-    ) AND
-        ABS(a::numeric) <= 9223372036854775807);          -- check range
+          AND 
+        ABS(a::NUMERIC) < 9223372036854775808;     -- check range
   END;
 
 
