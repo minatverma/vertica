@@ -8,14 +8,14 @@ CREATE OR REPLACE FUNCTION is_int(a varchar(65000))
 RETURN BOOLEAN
   AS BEGIN
     RETURN 
-        REGEXP_LIKE(a,'^\d{1,19}$') 
+        REGEXP_LIKE(TRIM(a),'^\d{1,19}$') 
           AND 
         ABS(a::NUMERIC) < 9223372036854775808;     -- check range
   END;
 
 
 ------ 
--- Converts month number to name 
+-- Extracts month name from month NUMBER 
 -- @month  - moth number candidate
 -- @return - month name iff month number is valid otherwise null
 ------
@@ -39,25 +39,24 @@ RETURN VARCHAR(10)
   END;
 
 ------ 
--- Extracts month name from date.
+-- Extracts month name from DATE.
 -- @d      - date candidate
 -- @return - month name iff month number is valid otherwise null
 ------
-CREATE OR REPLACE FUNCTION month_name(d DATE)
+CREATE OR REPLACE FUNCTION month_name(dt DATE)
 RETURN VARCHAR(10)
   AS BEGIN
-    RETURN (CASE
-      WHEN (month(d) =  1) THEN 'January'
-      WHEN (month(d) =  2) THEN 'February'
-      WHEN (month(d) =  3) THEN 'March'
-      WHEN (month(d) =  4) THEN 'April'
-      WHEN (month(d) =  5) THEN 'May'
-      WHEN (month(d) =  6) THEN 'June'
-      WHEN (month(d) =  7) THEN 'July'
-      WHEN (month(d) =  8) THEN 'August'
-      WHEN (month(d) =  9) THEN 'September'
-      WHEN (month(d) = 10) THEN 'October'
-      WHEN (month(d) = 11) THEN 'November'
-      WHEN (month(d) = 12) THEN 'December'
-    END);
+    RETURN month_name(MONTH(dt));
+  END;
+
+
+------ 
+-- Extracts month name from TIMESTAMP.
+-- @d      - date candidate
+-- @return - month name iff month number is valid otherwise null
+------
+CREATE OR REPLACE FUNCTION month_name(ts TIMESTAMP)
+RETURN VARCHAR(10)
+  AS BEGIN
+    RETURN month_name(MONTH(ts));
   END;
