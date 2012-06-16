@@ -18,11 +18,23 @@ g++ -D HAVE_LONG_INT_64 -I /opt/vertica/sdk/include -Wall -shared -Wno-unused-va
 ##
 ## create random data
 ##
-echo -e '
+echo -n '
+
+import sys
 import random
-for i in xrange(1000000):
-    print random.randint(1,12)
-' | python $DATA
+
+DATA_FILE  = None
+LINES      = int(sys.argv[2])
+
+DATA_FILE  = open(sys.argv[1], "w")
+for i in xrange(LINES):
+	DATA_FILE.write(str(random.randint(1,12)) + "\n")
+
+DATA_FILE.close()
+
+' > ${DATA}.py
+
+python ${DATA}.py ${DATA} 1000000
 
 ##
 ## create table
