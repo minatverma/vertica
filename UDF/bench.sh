@@ -3,7 +3,6 @@
 VSQL=/opt/vertica/bin/vsql
 DATA=/tmp/bench.data
 LOG=/tmp/bench.log
-TMP_SCRIPT=/tmp/script_bench.py
 LINES=1000000
 
 FUNC_NAME='month_name'
@@ -44,22 +43,9 @@ abort 'failed create cpp function'
 ##
 ## create random data
 ##
-echo -n '
-
-import sys
-import random
-
-DATA_FILE  = open(sys.argv[1], "w")
-LINES      = int(sys.argv[2])
-
-for i in xrange(LINES):
-	DATA_FILE.write(str(random.randint(1,12)) + "\n")
-
-DATA_FILE.close()
-
-' > ${TMP_SCRIPT}
-
-python ${TMP_SCRIPT} ${DATA} ${LINES}
+for i in `seq 1 $LINES`; do 
+	echo `date +'%N'`' % 12 + 1' | bc
+done > ${DATA}
 
 ##
 ## create table
