@@ -3,11 +3,14 @@
 VSQL=/opt/vertica/bin/vsql
 DATA=/tmp/bench.data
 LOG=/tmp/bench.log
+TMP_SCRIPT=/tmp/script_bench.py
+LINES=1000000
 
-
-CPP='_cpp'
-CASE='_case'
-DECODE='_decode'
+FUNC_NAME='month_name'
+CPP_FUNC='_cpp'
+CASE_FUNC='_case'
+DEC_FUNC='_decode'
+RFUNC='_rfunc'
 
 ##
 ## compile MonthName.cpp
@@ -23,28 +26,27 @@ echo -n '
 import sys
 import random
 
-DATA_FILE  = None
+DATA_FILE  = open(sys.argv[1], "w")
 LINES      = int(sys.argv[2])
 
-DATA_FILE  = open(sys.argv[1], "w")
 for i in xrange(LINES):
 	DATA_FILE.write(str(random.randint(1,12)) + "\n")
 
 DATA_FILE.close()
 
-' > ${DATA}.py
+' > ${TMP_SCRIPT}
 
-python ${DATA}.py ${DATA} 1000000
+python ${TMP_SCRIPT} ${DATA} ${LINES}
 
 ##
 ## create table
 ##
-$VSQL -c "create table if not exists UDFSimpleBencmark ( m_num int )"
+$VSQL -c "create table if not exists UDFSimpleBencmark ( m_num int );"
 
 ##
 ## load data
 ##
-$VSQL -c "copy UDFSimpleBencmark from '/tmp/int_1mil.dat' direct"
+$VSQL -c "copy UDFSimpleBencmark from '"${DATA}"' direct;"
 
 ##
 ## create C++ shared library
