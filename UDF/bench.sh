@@ -50,7 +50,7 @@ function test_avg
         echo $attemp
     done 
     echo -e "---"
-    echo 'AVG: '`echo '('${avg}')/'${ATTEMPS} | bc`' [sec]'
+    echo 'AVG: '`echo 'print (' $avg')/'5 | python`' [sec]'
     return;
 }
 
@@ -63,14 +63,17 @@ abort_if 'failed to compile'
 
 
 ## load library to Vertica 
-$VSQL -c "create library MonthNameLib AS '"${PWD}/MonthNameLib.so"';"
+$VSQL -o /dev/null -c "create library MonthNameLib AS '"${PWD}/MonthNameLib.so"';"
 abort_if 'failed create cpp library'
 
 
 ## create function 
-$VSQL -c "create function month_name_cpp as language 'C++' name 'MonthNameFactory' library MonthNameLib;"
+$VSQL -o /dev/null -c "create function month_name_cpp as language 'C++' name 'MonthNameFactory' library MonthNameLib;"
 abort_if 'failed create cpp function'
 
+
+## sql func
+$VSQL -f ${PWD}/MonthName.sql
 
 ## create random data
 for i in `seq 1 ${LINES}`; do 
@@ -80,7 +83,7 @@ abort_if 'failed create data test file'
 
 
 ## create table
-$VSQL -c "create table UDFSimpleBencmark( m_num int );"
+$VSQL -c "create table UDFSimpleBencmark( m_num int );" > /dev/null
 abort_if 'failed create table'
 
 
@@ -88,16 +91,17 @@ abort_if 'failed create table'
 $VSQL -c "copy UDFSimpleBencmark from '"${DATA}"' direct;"
 abort_if 'failed load data to Vertica'
 
-
+## test functions
 test_avg ${CPP_FUNC}
-#test_avg ${DEC_FUNC}
-#test_avg ${CASE_FUNC}
+test_avg ${DEC_FUNC}
+test_avg ${CASE_FUNC}
 
-# drop function month_name_cpp(int);
-# drop library MonthNameLib;
-
+## clear
 $VSQL -c "drop library MonthNameLib cascade;"
-$VSQL -c "drop table UDFSimpleBencmark"
-#rm -f ${DATA}
+$VSQL -c "drop table UDFSimpleBencmark;"
+$VSQL -c "drop function month_name_case(int);"
+$VSQL -c "drop function month_name_decode(int);"
+rm -rf MonthNameLib.so
+rm -f ${DATA}
 
 
