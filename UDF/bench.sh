@@ -11,12 +11,35 @@ CPP_FUNC='_cpp'
 CASE_FUNC='_case'
 DEC_FUNC='_decode'
 RFUNC='_rfunc'
+LAST_COMAND=''
+
+# [ $? -ne 0 ] && echo 'ERROR' 2>&1 && exit -1
+function abort 
+{
+    if [ $? -ne 0 ]; then
+        echo `date +'[ %H:%M:%S ]'`'[ ERROR ] '$1
+        exit 1
+    fi      
+    return 0
+}
 
 ##
-## compile MonthName.cpp
+## create cpp library
 ##
 g++ -D HAVE_LONG_INT_64 -I /opt/vertica/sdk/include -Wall -shared -Wno-unused-value \
 	-fPIC -o MonthNameLib.so MonthName.cpp /opt/vertica/sdk/include/Vertica.cpp
+abort 'compilation failed'
+
+
+##
+## load library create Vertica UFF cpp function
+##
+$VSQL -c "create library MonthNameLib AS '/home/dbadmin/MonthNameLib.so'"
+abort 'failed create cpp library'
+
+$VSQL -c "create function month_name_cpp as language 'C++' name 'MonthNameFactory' library MonthNameLib;"
+abort 'failed create cpp function'
+
 
 ##
 ## create random data
@@ -48,11 +71,6 @@ $VSQL -c "create table if not exists UDFSimpleBencmark ( m_num int );"
 ##
 $VSQL -c "copy UDFSimpleBencmark from '"${DATA}"' direct;"
 
-##
-## create C++ shared library
-##
-$VSQL -c "create library MonthNameLib AS '/home/dbadmin/MonthNameLib.so'"
-$VSQL -c "create function month_name_cpp as language 'C++' name 'MonthNameFactory' library MonthNameLib;"
 
 # measurement
 echo -e "SQL month name DECODE bench:\n"
