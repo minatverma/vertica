@@ -3,7 +3,7 @@
 VSQL=/opt/vertica/bin/vsql
 DATA=/tmp/bench.data
 LOG=/tmp/bench.log
-LINES=10
+LINES=1000000
 ATTEMPS=5
 
 CPP_FUNC='month_name_cpp'
@@ -12,6 +12,7 @@ DEC_FUNC='month_name_decode'
 RFUNC='month_name_rfunc'
 
 PWD=`pwd`
+echo ''>$LOG
 
 ## abort function - more readable
 ## [ $? -ne 0 ] && echo 'ERROR' 2>&1 && exit 1
@@ -38,7 +39,7 @@ function test_function
 function test_avg 
 {
     fname=${1}
-    echo -e "TEST function : ${fname}"
+    echo -e "\nTEST function : ${fname}"
     avg=0
     for i in `seq 1 ${ATTEMPS}`;do
         avg=${avg}+`test_function ${fname}`
@@ -51,6 +52,7 @@ function test_avg
     done 
     echo -e "---"
     echo 'AVG: '`echo 'print (' $avg')/'5 | python`' [sec]'
+    echo -e "\n"
     return;
 }
 
@@ -73,22 +75,32 @@ abort_if 'failed create cpp function'
 
 
 ## sql func
-$VSQL -f ${PWD}/MonthName.sql
+$VSQL -f ${PWD}/MonthName.sql >> $LOG
 
 ## create random data
-for i in `seq 1 ${LINES}`; do 
-	echo `date +'%N'`' % 12 + 1' | bc
-done >> ${DATA}
+echo '     
+import random
+import sys
+
+for i in range('$LINES'):
+    print random.randint(1,12)
+
+' | python > ${DATA}
+
+cat ${DATA} > ${DATA}_foo
+cat ${DATA}_foo >> ${DATA}
+cat ${DATA} >> ${DATA}_foo
+cat ${DATA}_foo >> ${DATA}
 abort_if 'failed create data test file'
 
 
 ## create table
-$VSQL -c "create table UDFSimpleBencmark( m_num int );" > /dev/null
+$VSQL -c "create table UDFSimpleBencmark( m_num int );" >>$LOG
 abort_if 'failed create table'
 
 
 ## load data
-$VSQL -c "copy UDFSimpleBencmark from '"${DATA}"' direct;"
+$VSQL -c "copy UDFSimpleBencmark from '"${DATA}"' direct;">>$LOG
 abort_if 'failed load data to Vertica'
 
 ## test functions
@@ -97,11 +109,13 @@ test_avg ${DEC_FUNC}
 test_avg ${CASE_FUNC}
 
 ## clear
-$VSQL -c "drop library MonthNameLib cascade;"
-$VSQL -c "drop table UDFSimpleBencmark;"
-$VSQL -c "drop function month_name_case(int);"
-$VSQL -c "drop function month_name_decode(int);"
+echo -n 'Clear working directory..........'
+$VSQL -c "drop library MonthNameLib cascade;" >> $LOG
+$VSQL -c "drop table UDFSimpleBencmark;">>$LOG
+$VSQL -c "drop function month_name_case(int);">>$LOG
+$VSQL -c "drop function month_name_decode(int);">>$LOG
 rm -rf MonthNameLib.so
+echo -e "DONE"
 rm -f ${DATA}
-
+rm -f ${DATA}_foo
 
