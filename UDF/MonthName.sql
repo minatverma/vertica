@@ -1,7 +1,7 @@
 --
 -- month to name function with decode
 --
-CREATE OR REPLACE FUNCTION month_name(month_num INT)
+CREATE OR REPLACE FUNCTION month_name_decode(month_num INT)
 RETURN VARCHAR(10)
   AS BEGIN
     RETURN Decode(month_num,
@@ -23,7 +23,7 @@ RETURN VARCHAR(10)
 --
 -- month to name function with case else
 --
-CREATE OR REPLACE FUNCTION month_name2(month INT)
+CREATE OR REPLACE FUNCTION month_name_case(month INT)
 RETURN VARCHAR(10)
   AS BEGIN
     RETURN (CASE
