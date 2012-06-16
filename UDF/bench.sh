@@ -1,6 +1,10 @@
 #!/bin/bash
 
 VSQL=/opt/vertica/bin/vsql
+DATA=/tmp/bench.data
+LOG=/tmp/bench.log
+
+
 CPP='_cpp'
 CASE='_case'
 DECODE='_decode'
@@ -14,11 +18,11 @@ g++ -D HAVE_LONG_INT_64 -I /opt/vertica/sdk/include -Wall -shared -Wno-unused-va
 ##
 ## create random data
 ##
-echo -e "
+echo -e '
 import random
 for i in xrange(1000000):
     print random.randint(1,12)
-" | python > /tmp/int_1mil.dat
+' | python $DATA
 
 ##
 ## create table
