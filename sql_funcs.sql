@@ -117,6 +117,18 @@ RETURN TIMESTAMP
   AS BEGIN
     RETURN TO_TIMESTAMP( 
                EXTRACT(EPOCH FROM ts1) + 
-               RANDOMINT(FLOOR(EXTRACT(EPOCH FROM ts2) - EXTRACT(EPOCH FROM ts1))::INT)
+               RANDOMINT(FLOOR(@ EXTRACT(EPOCH FROM ts2) - EXTRACT(EPOCH FROM ts1))::INT)
            );
+  END;
+
+------ 
+-- Returns midpoint timestamp
+-- @s      - from timestamp candidate
+-- @e      - to timestamp candidate
+-- @return - midpoint timestamp
+------
+CREATE OR REPLACE FUNCTION midpoint_timestamp(s timestamp, e timestamp)
+RETURN TIMESTAMP
+  AS BEGIN
+      RETURN TO_TIMESTAMP((EXTRACT(epoch from s) + EXTRACT(epoch from e))/2.0);
   END;
