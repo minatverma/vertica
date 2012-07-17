@@ -104,3 +104,19 @@ RETURN VARCHAR(10)
   AS BEGIN
     RETURN weekday_name(DAYOFWEEK(ts));
   END;
+
+
+------ 
+-- Returns random timestamp between 2 other timestamps
+-- @ts1    - lower bound timestamp candidate
+-- @ts2    - upper bound timestamp candidate
+-- @return - random timestamp between LowB and UpB
+------
+CREATE OR REPLACE FUNCTION random_ts(ts1 TIMESTAMP, ts2 TIMESTAMP)
+RETURN TIMESTAMP
+  AS BEGIN
+    RETURN TO_TIMESTAMP( 
+               EXTRACT(EPOCH FROM ts1) + 
+               RANDOMINT(FLOOR(EXTRACT(EPOCH FROM ts2) - EXTRACT(EPOCH FROM ts1))::INT)
+           );
+  END;
