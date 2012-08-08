@@ -131,3 +131,66 @@ RETURN TIMESTAMP
   AS BEGIN
       RETURN TO_TIMESTAMP((EXTRACT(epoch from s) + EXTRACT(epoch from e))/2.0);
   END;
+
+
+-------------------------------------------------------------------------------
+--- Returns years season (winter, spring, summer, autumn)
+-------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION season(month_num INTEGER)
+RETURN VARCHAR(10)
+AS BEGIN
+  RETURN (CASE
+      WHEN (month_num = 12) THEN 'Winter'
+      WHEN (month_num <  3) THEN 'Winter'
+      WHEN (month_num <  6) THEN 'Spring'
+      WHEN (month_num <  9) THEN 'Summer'
+      WHEN (month_num < 12) THEN 'Fall'
+    END);
+  END;
+
+CREATE OR REPLACE FUNCTION season(dt DATE)
+RETURN VARCHAR(10)
+AS BEGIN
+  RETURN season(MONTH(dt));
+  END;
+
+CREATE OR REPLACE FUNCTION season(ts TIMESTAMP)
+RETURN VARCHAR(10)
+AS BEGIN
+  RETURN season(MONTH(ts));
+  END;
+
+CREATE OR REPLACE FUNCTION season(tsz TIMESTAMPTZ)
+RETURN VARCHAR(10)
+AS BEGIN
+  RETURN season(MONTH(tsz));
+  END;
+
+
+-------------------------------------------------------------------------------
+---   Returns if year is leap
+-------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION is_leap_year(year INTEGER)
+RETURN BOOLEAN
+AS BEGIN
+  RETURN (year % 4 = 0 AND (year % 100 = 0 OR year %400 <> 0));
+  END;
+
+CREATE OR REPLACE FUNCTION is_leap_year(dt DATE)
+RETURN BOOLEAN
+AS BEGIN
+  RETURN is_leap_year(YEAR(dt));
+  END;
+
+CREATE OR REPLACE FUNCTION is_leap_year(ts TIMESTAMP)
+RETURN BOOLEAN
+AS BEGIN
+  RETURN is_leap_year(YEAR(ts));
+  END;
+
+CREATE OR REPLACE FUNCTION is_leap_year(tsz TIMESTAMPTZ)
+RETURN BOOLEAN
+AS BEGIN
+  RETURN is_leap_year(YEAR(tsz));
+  END;
+
