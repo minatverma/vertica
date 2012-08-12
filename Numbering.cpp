@@ -9,12 +9,11 @@ const std::string DIGITS[][10] = {"zero", "one", "two", "three", "four", "five",
 const std::string TWENTY[][10] = {"ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
 
 std::string numbering_digit(int num) {
-	num = num % 10;
-	return DIGITS[0][num];
+	return DIGITS[0][num % 10];
 }
 
 std::string numbering_tens(int num) {
-	switch(num) {
+	switch(num % 100) {
 		case 20:
 			return "twenty";
 		case 30:
@@ -86,7 +85,7 @@ class DigitNumbering : public ScalarFunction
 		do {
 			const vint num = arg_reader.getIntRef(0);
 
-			// check for valid month number
+			// check for valid number
 			if (num > 1000000000)
 				vt_report_error(0, "ERROR: OUT OF BOUNDS");
 
@@ -98,7 +97,6 @@ class DigitNumbering : public ScalarFunction
 
 class DigitNumberingFactory : public ScalarFunctionFactory
 {
-	// return an instance of MonthName to perform the actual addition.
 	virtual ScalarFunction *createScalarFunction(ServerInterface &interface)
 	{
 		return vt_createFuncObj(interface.allocator, DigitNumbering);
