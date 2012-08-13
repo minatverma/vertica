@@ -26,31 +26,31 @@ using namespace std;
 using namespace Vertica;
 
 // constants
-const string ONES[][10]  = {"zero", "one"   , "two"   , "three"   , "four"    , "five"   , "six"    , "seven"    , "eight"   , "nine"    };
-const string TEENS[][10] = {"ten" , "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
-const string TENS[][10]  = {"zero", "ten"   , "twenty", "thirty"  , "forty"   , "fifty"  , "sixty"  , "seventy"  , "eighty"  , "ninety"  }; 
+const string ONES[10]  = {"zero", "one"   , "two"   , "three"   , "four"    , "five"   , "six"    , "seven"    , "eight"   , "nine"    };
+const string TEENS[10] = {"ten" , "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"};
+const string TENS[10]  = {"zero", "ten"   , "twenty", "thirty"  , "forty"   , "fifty"  , "sixty"  , "seventy"  , "eighty"  , "ninety"  }; 
 
 
 string spell_out(int number)
 {
 	if (number < TEN)
-		return ONES[0][number % TEN];
+		return ONES[number % TEN];
 	
 	if (number < TWENTY)
-		return TEENS[0][number % TEN];
+		return TEENS[number % TEN];
 		
 	if (number < HUNDRED) 
 	{
 		if (number % TEN == 0)
-			return TENS[0][number / TEN];
-		return TENS[0][number / TEN ] + "-" + ONES[0][number % TEN];
+			return TENS[number / TEN];
+		return TENS[number / TEN ] + "-" + ONES[number % TEN];
 	}
 	
 	if (number < THOUSAND)
 	{
 		if (number % HUNDRED == 0)
-			return ONES[0][number / HUNDRED] + " hundred";
-		return ONES[0][number / HUNDRED] + " hundred " + spell_out(number % HUNDRED);
+			return ONES[number / HUNDRED] + " hundred";
+		return ONES[number / HUNDRED] + " hundred " + spell_out(number % HUNDRED);
 	}
 	
 	if (number < MILLION)
