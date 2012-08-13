@@ -1,5 +1,6 @@
-Vertica misc
-------------
+Vertica Extentions
+==================
+
 
 UDF SQL functions:
 ~~~~~~~~~~~~~~~~~~
@@ -11,6 +12,7 @@ UDF SQL functions:
   * midpoint_timestamp  - returns middle date between two dates
   * is_leap_year        - returns if year is leap
   * season              - returns season = {winter,spring,summer,autumn} 
+
 
 UDF C++ functions:
 ~~~~~~~~~~~~~~~~~~
