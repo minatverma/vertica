@@ -3,8 +3,7 @@ Vertica Extentions
 
 
 UDF SQL functions:
-~~~~~~~~~~~~~~~~~~
-
+------------------
   * is_int              - validates if int
   * month_name          - returns month name
   * weekday_name        - returns weekday name
@@ -16,7 +15,6 @@ UDF SQL functions:
 
 
 UDF C++ functions:
-~~~~~~~~~~~~~~~~~~
-
+------------------
   * month_name          - returns month name
   * spell_out           - spells out positive integer less than 1 billion 
