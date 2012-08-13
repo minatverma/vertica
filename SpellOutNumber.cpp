@@ -15,7 +15,6 @@
 #include "Vertica.h"
 
 // substitution
-#define ZERO               0
 #define TEN               10
 #define TWENTY            20
 #define HUNDRED          100
@@ -43,8 +42,8 @@ string spell_out(int number)
 	if (number < HUNDRED) 
 	{
 		if (number % TEN == 0)
-			return TENS[0][number / 10];
-		return TENS[0][number / 10 ] + "-" + ONES[0][number % TEN];
+			return TENS[0][number / TEN];
+		return TENS[0][number / TEN ] + "-" + ONES[0][number % TEN];
 	}
 	
 	if (number < THOUSAND)
