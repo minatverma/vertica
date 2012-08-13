@@ -14,6 +14,7 @@ UDF SQL functions:
   * season              - returns season = {winter,spring,summer,autumn} 
 
 
+
 UDF C++ functions:
 ~~~~~~~~~~~~~~~~~~
 
