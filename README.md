@@ -18,3 +18,4 @@ UDF C++ functions:
 ------------------
   * month_name          - returns month name
   * spell_out           - spells out positive integer less than 1 billion 
+  * reverse             - reverse string
