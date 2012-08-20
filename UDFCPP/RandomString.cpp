@@ -6,9 +6,6 @@
 
 using namespace Vertica;
 
-const char num[] = "0123456789"; 
-const char alpha_upper[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-const char alpha_lower[] = "abcdefghijklmnopqrstuvwxyz";
 const char alphanum[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 
