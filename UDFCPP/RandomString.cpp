@@ -50,7 +50,7 @@ class RandomStringFactory : public ScalarFunctionFactory
                                const SizedColumnTypes &argTypes,
                                SizedColumnTypes &returnType)
     {
-        returnType.addVarchar(100);
+        returnType.addVarchar(256);
     }
 };
 
