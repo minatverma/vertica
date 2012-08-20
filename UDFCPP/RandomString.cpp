@@ -17,10 +17,10 @@ class RandomString : public ScalarFunction
                         BlockWriter &res_writer) {
                 if (arg_reader.getNumCols() != 1)
                         vt_report_error(0, "Function only accept 1 arguments, but %zu provided", arg_reader.getNumCols());
-
+                
+                const vint len = arg_reader.getIntRef(0);
                 // While we have inputs to process
                 do {
-                        vint len = arg_reader.getIntRef(0);
                         char s[len + 1];
 			for (int i = 0; i < len; ++i) 
 				s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
