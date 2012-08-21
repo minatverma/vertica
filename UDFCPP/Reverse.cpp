@@ -18,7 +18,7 @@ class ReverseString : public ScalarFunction
                 do {
                         std::string  src = arg_reader.getStringRef(0).str();
                         std::reverse(src.begin(), src.end());
-                        res_writer.getStringRef().copy(src;
+                        res_writer.getStringRef().copy(src);
                         res_writer.next();
                 } while (arg_reader.next());
         }
