@@ -2,14 +2,8 @@
 #include <string>
 #include "Vertica.h"
 
-
-using namespace std;
 using namespace Vertica;
 
-string _reverse(string str) {
-        reverse(str.begin(), str.end());
-        return str;
-}
 
 class ReverseString : public ScalarFunction
 {
@@ -22,8 +16,9 @@ class ReverseString : public ScalarFunction
 
                 // While we have inputs to process
                 do {
-                        std::string  inStr = arg_reader.getStringRef(0).str();
-                        res_writer.getStringRef().copy(_reverse(inStr));
+                        std::string  src = arg_reader.getStringRef(0).str();
+                        std::reverse(src.begin(), src.end());
+                        res_writer.getStringRef().copy(src;
                         res_writer.next();
                 } while (arg_reader.next());
         }
