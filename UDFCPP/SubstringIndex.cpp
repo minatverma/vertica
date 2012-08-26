@@ -38,13 +38,13 @@ class SubstringIndex : public ScalarFunction
 			BlockReader &arg_reader,
 			BlockWriter &res_writer) {
 		if (arg_reader.getNumCols() != 3)
-			vt_report_error(0, "Function only accept 1 arguments, but %zu provided", arg_reader.getNumCols());
+			vt_report_error(0, "Function only accept 3 arguments, but %zu provided", arg_reader.getNumCols());
 
 		const string delim = arg_reader.getStringRef(1).str();
 		const vint occur   = arg_reader.getIntRef(2); 
 		// While we have inputs to process
 		do {
-			std::string src = arg_reader.getStringRef(0).str();
+			string src = arg_reader.getStringRef(0).str();
 			int  len = src.size();
 			int  idx = min(src.find(delim), len);
 			int  cnt = 0; 
