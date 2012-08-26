@@ -40,16 +40,17 @@ class SubstringIndex : public ScalarFunction
 		if (arg_reader.getNumCols() != 3)
 			vt_report_error(0, "Function only accept 3 arguments, but %zu provided", arg_reader.getNumCols());
 
-		const string delim = arg_reader.getStringRef(1).str();
-		const vint occur   = arg_reader.getIntRef(2); 
 		// While we have inputs to process
 		do {
-			string src = arg_reader.getStringRef(0).str();
-			int  len = src.size();
-			int  idx = min(src.find(delim), len);
-			int  cnt = 0; 
-			int  tot = occur;
-			char str[idx + 1];
+			string src   = arg_reader.getStringRef(0).str();
+			string delim = arg_reader.getStringRef(1).str();
+			vint   occur = arg_reader.getIntRef(2); 
+			int    len   = src.size();
+			int    idx   = min(src.find(delim), len);
+			int    cnt   = 0; 
+			int    tot   = occur;
+			char   str[idx + 1];
+			
 			if (occur < 0) {
 				reverse(src.begin(), src.end());
 				tot = -occur;
