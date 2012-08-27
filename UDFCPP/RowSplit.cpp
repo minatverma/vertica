@@ -1,6 +1,4 @@
-/* 
- * Copyright (c) 2012 TWINGO LTD (www.twingo.co.il) 
- */
+/* -= TWINGO LTD 2006-2012 (www.twingo.co.il) =- */
 
 /* 
  * Description : Splits a string to rows
@@ -13,7 +11,7 @@
 using namespace Vertica;
 using namespace std;
 
-
+// in general split a string to rows is a same as to array
 class StringTokenizer : public TransformFunction
 {
 	virtual void processPartition(ServerInterface &srvInterface, 
@@ -28,8 +26,8 @@ class StringTokenizer : public TransformFunction
 				const VString &sentence  = inputReader.getStringRef(0);
 				const VString &delimiter = inputReader.getStringRef(1);
 
-				// If input string is NULL, then output is NULL as well
-				if (delimiter.isNull())
+				// If input delimiter is NULL, then output is NULL as well
+				if (delimiter.isNull()) // todo empty string validation
 				{
 					VString &word = outputWriter.getStringRef(0);
 					if (sentence.isNull())
@@ -44,22 +42,22 @@ class StringTokenizer : public TransformFunction
 					int    idx = str.find(del, 0);
 					int d_size = del.size();
 
-					while (idx != string::npos) {
+					while (idx != string::npos) {       // while delimiter is found
 
-						word = str.substr(0, idx);
-						str.erase(0, idx + d_size);
-						idx = str.find(del, 0);
+						word = str.substr(0, idx);  // extract token
+						str.erase(0, idx + d_size); // remove token + delimiter
+						idx = str.find(del, 0);     // find next
 
-						if (!word.empty()) {
+						if (!word.empty()) {        // output result
 							VString &out = outputWriter.getStringRef(0);
 							out.copy(word);
 							outputWriter.next();
 						}
 					}
 
-					if (!str.empty()) {
+					if (!str.empty()) {                 // last token - dirty workaround
 						VString &out2 = outputWriter.getStringRef(0);
-						out2.copy(str);
+						out2.copy(str);             // VString::out not local?
 						outputWriter.next();
 					}
 				}
