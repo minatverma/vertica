@@ -194,3 +194,13 @@ AS BEGIN
   RETURN is_leap_year(YEAR(tsz));
   END;
 
+CREATE OR REPLACE FUNCTION current_quarter_last_day()
+RETURN TIMESTAMP
+  AS BEGIN
+      RETURN CASE ((MONTH(SYSDATE()) - 1) // 3 + 1)
+                  WHEN 1 THEN (YEAR(SYSDATE()) || '-03-31 23:59:59')::TIMESTAMP
+                  WHEN 2 THEN (YEAR(SYSDATE()) || '-06-30 23:59:59')::TIMESTAMP
+                  WHEN 3 THEN (YEAR(SYSDATE()) || '-09-30 23:59:59')::TIMESTAMP
+                  WHEN 4 THEN (YEAR(SYSDATE()) || '-12-31 23:59:59')::TIMESTAMP
+              END;
+  END;
