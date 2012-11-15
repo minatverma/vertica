@@ -193,6 +193,9 @@ AS BEGIN
   RETURN is_leap_year(YEAR(tsz));
   END;
 
+-------------------------------------------------------------------------------
+--- Returns quarter day
+-------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION current_quarter_last_day()
 RETURN TIMESTAMP
   AS BEGIN
