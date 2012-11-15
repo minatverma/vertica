@@ -22,19 +22,19 @@ RETURN BOOLEAN
 CREATE OR REPLACE FUNCTION month_name(month INT)
 RETURN VARCHAR(10)
   AS BEGIN
-    RETURN (CASE
-      WHEN (month = 1)  THEN 'January'
-      WHEN (month = 2)  THEN 'February'
-      WHEN (month = 3)  THEN 'March'
-      WHEN (month = 4)  THEN 'April'
-      WHEN (month = 5)  THEN 'May'
-      WHEN (month = 6)  THEN 'June'
-      WHEN (month = 7)  THEN 'July'
-      WHEN (month = 8)  THEN 'August'
-      WHEN (month = 9)  THEN 'September'
-      WHEN (month = 10) THEN 'October'
-      WHEN (month = 11) THEN 'November'
-      WHEN (month = 12) THEN 'December'
+    RETURN (CASE month
+      WHEN  1  THEN 'January'
+      WHEN  2  THEN 'February'
+      WHEN  3  THEN 'March'
+      WHEN  4  THEN 'April'
+      WHEN  5  THEN 'May'
+      WHEN  6  THEN 'June'
+      WHEN  7  THEN 'July'
+      WHEN  8  THEN 'August'
+      WHEN  9  THEN 'September'
+      WHEN 10  THEN 'October'
+      WHEN 11  THEN 'November'
+      WHEN 12  THEN 'December'
     END);
   END;
 
@@ -70,14 +70,14 @@ RETURN VARCHAR(10)
 CREATE OR REPLACE FUNCTION weekday_name(weekday INT)
 RETURN VARCHAR(10)
   AS BEGIN
-    RETURN (CASE
-      WHEN (weekday = 1) THEN 'Sunday'
-      WHEN (weekday = 2) THEN 'Monday'
-      WHEN (weekday = 3) THEN 'Tuesday'
-      WHEN (weekday = 4) THEN 'Wednesday' 
-      WHEN (weekday = 5) THEN 'Thursday'
-      WHEN (weekday = 6) THEN 'Friday'
-      WHEN (weekday = 7) THEN 'Saturday' 
+    RETURN (CASE weekday
+      WHEN  1  THEN 'Sunday'
+      WHEN  2  THEN 'Monday'
+      WHEN  3  THEN 'Tuesday'
+      WHEN  4  THEN 'Wednesday'
+      WHEN  5  THEN 'Thursday'
+      WHEN  6  THEN 'Friday'
+      WHEN  7  THEN 'Saturday'
     END);
   END;
 
@@ -140,11 +140,10 @@ CREATE OR REPLACE FUNCTION season(month_num INTEGER)
 RETURN VARCHAR(10)
 AS BEGIN
   RETURN (CASE
-      WHEN (month_num = 12) THEN 'Winter'
-      WHEN (month_num <  3) THEN 'Winter'
-      WHEN (month_num <  6) THEN 'Spring'
-      WHEN (month_num <  9) THEN 'Summer'
-      WHEN (month_num < 12) THEN 'Fall'
+      WHEN (month_num % 12 <  3) THEN 'Winter'
+      WHEN (month_num      <  6) THEN 'Spring'
+      WHEN (month_num      <  9) THEN 'Summer'
+      WHEN (month_num      < 12) THEN 'Fall'
     END);
   END;
 
