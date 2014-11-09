@@ -1,5 +1,15 @@
+Vertica Repo
+============
+
+  * bcp
+  * split
+  * dump
+  * compression
+  * topology
+
+
 Vertica Extentions
-==================
+~~~~~~~~~~~~~~~~~~
 
 
 UDF SQL functions:
