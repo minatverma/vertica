@@ -1,31 +1,10 @@
-Vertica Repo
-============
-
-  * bcp
-  * split
-  * dump
-  * compression
-  * topology
-
-
-Vertica Extentions
-~~~~~~~~~~~~~~~~~~
-
-
-UDF SQL functions:
-------------------
-  * is_int              - validates if int
-  * month_name          - returns month name
-  * weekday_name        - returns weekday name
-  * random_ts           - returns random timestamp
-  * midpoint_timestamp  - returns middle date between two dates
-  * is_leap_year        - returns if year is leap
-  * season              - returns season = {winter,spring,summer,autumn} 
-
-
+==============================
+Vertica Utilities & Extentions
+==============================
 
 UDF C++ functions:
 ------------------
-  * month_name          - returns month name
-  * spell_out           - spells out positive integer less than 1 billion 
-  * reverse             - reverse string
+  * NormalDistribution       - Produces a set of normally distributed random values.
+  * ConcatRow                - Concatenate several columns to a single string.
+  * SpellOutNumber           - Translates numeric values to their textual representation.
+  * Soundex                  - Is a phonetic algorithm for indexing names by sound, as pronounced in English.
