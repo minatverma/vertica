@@ -1,5 +1,10 @@
 # Vertica Utilities & Extentions
 
+## Utilities
+
+  * Bash
+  * Python
+
 ## Extentions
 
 ### UDF C++:
