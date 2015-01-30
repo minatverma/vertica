@@ -1,6 +1,6 @@
 # Vertica Utilities & Extentions
 
-## Utilities
+## Utilities (comming soon)
 
   * Bash
   * Python
@@ -15,3 +15,7 @@
 | ConcatRow                     | Concatenate several columns to a single string                                       |
 | SpellOutNumber                | Translates numeric values to their textual representation                            |
 | Soundex                       | Is a phonetic algorithm for indexing names by sound, as pronounced in English        |
+
+## Blog
+
+comming soon...
