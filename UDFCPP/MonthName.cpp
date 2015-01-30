@@ -4,6 +4,7 @@
  * Copyright    : Copyright (c) 2012 Daniel Leybovich
  * Date         : May 29, 2012
  * Author       : Daniel Leybovich
+ * Status	: Obsolete, use in "select to_char(date('2015-03-01'), 'Month'); => March"
  */
 #include "Vertica.h"
 #include <string>
