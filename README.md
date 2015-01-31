@@ -1,5 +1,8 @@
 # Vertica Extentions & Utilities
 
+#### NOTE for Jan 31 2015:
+The repository will undergo major changes. Stay tuned :)
+
 ## Extentions
 
 ### UDF C++:
